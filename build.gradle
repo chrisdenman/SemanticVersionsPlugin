@@ -1,0 +1,50 @@
+plugins {
+    id 'groovy'
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+}
+
+description = "A simple, properties-file based, semantic versioning, Gradle plugin"
+group = 'uk.co.ceilingcat'
+version = '0.0.1'
+
+repositories {
+    maven {
+        url ArtifactRepositorySourceUrl
+        allowInsecureProtocol true
+        credentials {
+            username = ArtifactRepositoryUser
+            password = ArtifactRepositoryPassword
+        }
+    }
+}
+
+gradlePlugin {
+    plugins {
+        semanticVersionsPlugin {
+            id = 'uk.co.ceilingcat.SemanticVersions'
+            implementationClass = 'uk.co.ceilingcat.gradle.plugins.versioning.SemanticVersionsPlugin'
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            name 'Artifact'
+            url ArtifactRepositoryReleasesUrl
+            allowInsecureProtocol true
+            credentials {
+                username = ArtifactRepositoryUser
+                password = ArtifactRepositoryPassword
+            }
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
