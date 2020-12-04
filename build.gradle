@@ -1,12 +1,28 @@
+buildscript {
+    repositories {
+        maven {
+            url ArtifactRepositorySourceUrl
+            allowInsecureProtocol true
+            credentials {
+                username = ArtifactRepositoryUser
+                password = ArtifactRepositoryPassword
+            }
+        }
+    }
+    dependencies {
+        classpath "uk.co.ceilingcat:${name}:0.0.1"
+    }
+}
+
 plugins {
     id 'groovy'
     id 'java-gradle-plugin'
     id 'maven-publish'
 }
+apply plugin : "uk.co.ceilingcat.SemanticVersions"
 
 description = "A simple, properties-file based, semantic versioning, Gradle plugin"
 group = 'uk.co.ceilingcat'
-version = '0.0.1'
 
 repositories {
     maven {
@@ -48,3 +64,8 @@ publishing {
     }
 }
 
+setProjectVersion.dependsOn(patchIncrement)
+['processResources', 'compileJava'].each { it -> tasks."${it}".dependsOn(setProjectVersion) }
+project.afterEvaluate { final Project project ->
+    project.tasks.matching { final Task task -> task.name.startsWith('generatePom') || task.name.startsWith('generateMetadata') }.all { it -> it.dependsOn(setProjectVersion) }
+}
