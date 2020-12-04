@@ -64,9 +64,8 @@ publishing {
     }
 }
 
+setProjectVersion.dependsOn(patchIncrement)
 ['processResources', 'compileJava'].each { it -> tasks."${it}".dependsOn(setProjectVersion) }
 project.afterEvaluate { final Project project ->
     project.tasks.matching { final Task task -> task.name.startsWith('generatePom') || task.name.startsWith('generateMetadata') }.all { it -> it.dependsOn(setProjectVersion) }
 }
-
-build.dependsOn(patchIncrement)
